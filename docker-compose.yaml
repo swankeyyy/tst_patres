@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  library:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "library"
+      POSTGRES_USER: "library"
+      POSTGRES_PASSWORD: "library"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+
+      - library-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  tst:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: "tst_db"
+      POSTGRES_USER: "tst_db"
+      POSTGRES_PASSWORD: "tst_db"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+
+      - tst_db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+volumes:
+  library-data:
+  tst_db-data:

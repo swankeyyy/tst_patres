@@ -1,8 +1,0 @@
-FROM postgres:latest
-
-ENV POSTGRES_USER=library
-ENV POSTGRES_PASSWORD=library
-ENV POSTGRES_DB=library
-
-
-EXPOSE 5432

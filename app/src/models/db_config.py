@@ -30,3 +30,4 @@ class DBConfig:
 
 
 db_config = DBConfig(url=settings.DB_URL, echo=settings.DB_ECHO)
+test_db_config = DBConfig(url=settings.TEST_DB_URL, echo=False)

@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
 )
 
-from src.settings import settings
+from app.src.settings import settings
 
 
 class DBConfig:
@@ -21,8 +21,7 @@ class DBConfig:
         """close database engine"""
         await self.engine.dispose()
 
-    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
-        """Get async session"""
+    async def get_session(self) -> AsyncSession:
         async with self.session_factory() as session:
             yield session
 

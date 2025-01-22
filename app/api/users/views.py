@@ -4,7 +4,7 @@ from typing import Union
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.users.dependencies import get_credentials_from_header
+from app.api.dependencies import get_credentials_from_header, get_current_user
 from app.src.models.db_config import db_config
 from app.api.users.service import UserService
 from app.api.users.schemas import UserBase
@@ -39,4 +39,18 @@ async def login_user(
 ) -> str | Exception:
     """Takes username and password from Header and logs in the user"""
     result = await UserService.login_user(**credentials, session=session)
+    return result
+
+
+@router.get(
+    "/me",
+    summary="Get current user",
+    status_code=status.HTTP_200_OK,
+    response_model=Union[UserBase, None],
+)
+async def get_current_user(
+    session: AsyncSession = Depends(db_config.get_session),
+    username: str = Depends(get_current_user),
+) -> UserBase | Exception:
+    result = await UserService.get_current_user(username, session=session)
     return result

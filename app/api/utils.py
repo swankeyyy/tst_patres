@@ -1,6 +1,8 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
 from jose import jwt
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
+
 from app.src.settings import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -35,3 +37,14 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
         to_encode, settings.TOKEN_SECRET_KEY, algorithm=settings.HASH_ALGORITHM
     )
     return encoded_jwt
+
+
+def get_username_from_token(token: str) -> str:
+    """Get username from token"""
+    try:
+        payload = jwt.decode(
+            token, settings.TOKEN_SECRET_KEY, algorithms=[settings.HASH_ALGORITHM]
+        )
+        return payload.get("username")
+    except jwt.JWTError:
+        raise HTTPException(status_code=400, detail="Token is invalid")

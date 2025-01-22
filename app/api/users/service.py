@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi import HTTPException
 
-from app.api.users.utils import *
+from app.api.utils import *
 from app.src.models import User
 
 
@@ -51,3 +51,17 @@ class UserService:
         raise HTTPException(
             status_code=400, detail="User not found or password is incorrect"
         )
+
+    @staticmethod
+    async def get_current_user(
+        username: str, session: AsyncSession
+    ) -> User | Exception:
+        """Get current user from DB"""
+        stmt = select(User).where(User.username == username)
+        user = await session.execute(stmt)
+        user = user.scalars().first()
+
+        if user:
+            return user
+
+        raise HTTPException(status_code=400, detail="User not found")

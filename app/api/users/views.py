@@ -30,13 +30,13 @@ async def register_new_user(
 @router.post(
     "/login",
     summary="Login user",
-    response_model=Union[UserBase, None],
+    response_model=Union[str, None],
     status_code=status.HTTP_200_OK,
 )
 async def login_user(
     credentials: dict = Depends(get_credentials_from_header),
     session: AsyncSession = Depends(db_config.get_session),
-) -> UserBase | Exception:
+) -> str | Exception:
     """Takes username and password from Header and logs in the user"""
-    user = await UserService.login_user(**credentials, session=session)
-    return user
+    result = await UserService.login_user(**credentials, session=session)
+    return result

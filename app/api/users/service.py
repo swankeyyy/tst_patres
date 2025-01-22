@@ -36,7 +36,7 @@ class UserService:
     @staticmethod
     async def login_user(
         username: str, password: str, session: AsyncSession
-    ) -> User | Exception:
+    ) -> str | Exception:
         """Try to get user from DB, if it exists, check password"""
 
         stmt = select(User).where(User.username == username)
@@ -45,7 +45,8 @@ class UserService:
 
         if user:
             if check_password(password, user.password):
-                return user
+                access_token = create_access_token({"username": user.username})
+                return access_token
 
         raise HTTPException(
             status_code=400, detail="User not found or password is incorrect"

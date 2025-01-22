@@ -9,7 +9,12 @@ from app.src.models import User
 
 class UserService:
     @staticmethod
-    async def create_user(username: str, password: str, session: AsyncSession) -> User | Exception:
+    async def create_user(
+        username: str, password: str, session: AsyncSession
+    ) -> User | Exception:
+
+        if not username or not password:
+            raise HTTPException(status_code=400, detail="Username or password is empty")
 
         """Try to get user from DB, if it not exists, create new user"""
         stmt = select(User).where(User.username == username)
@@ -27,3 +32,21 @@ class UserService:
             return user
 
         raise HTTPException(status_code=400, detail="User is already exist")
+
+    @staticmethod
+    async def login_user(
+        username: str, password: str, session: AsyncSession
+    ) -> User | Exception:
+        """Try to get user from DB, if it exists, check password"""
+
+        stmt = select(User).where(User.username == username)
+        user = await session.execute(stmt)
+        user = user.scalars().first()
+
+        if user:
+            if check_password(password, user.password):
+                return user
+
+        raise HTTPException(
+            status_code=400, detail="User not found or password is incorrect"
+        )

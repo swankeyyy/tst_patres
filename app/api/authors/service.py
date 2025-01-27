@@ -45,3 +45,16 @@ class AuthorService:
             raise HTTPException(
                 status_code=404, detail="Author not found or wrong id length"
             )
+
+    @staticmethod
+    async def get_author(author_id: str, session: AsyncSession) -> Author | Exception:
+        """Get author by id"""
+        try:
+            stmt = select(Author).filter(Author.id == author_id)
+            author = await session.execute(stmt)
+            author = author.scalars().first()
+            return author
+        except SQLAlchemyError:
+            raise HTTPException(
+                status_code=404, detail="Author not found or wrong id length"
+            )

@@ -4,5 +4,6 @@ class Settings:
     TEST_DB_URL = 'postgresql+asyncpg://tst_db:tst_db@localhost:5433/tst_db'
     HASH_ALGORITHM = 'HS256'
     TOKEN_SECRET_KEY = 'testtesttest'
+    API_PREFIX = '/api'
 
 settings = Settings()

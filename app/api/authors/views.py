@@ -55,3 +55,6 @@ async def delete_author(author_id: str, session=Depends(db_config.get_session), 
     """Delete an author by id"""
     await AuthorService.delete_author(author_id, session)
     return None
+
+
+

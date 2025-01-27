@@ -17,7 +17,6 @@ class Book(Base):
     title: Mapped[str] = mapped_column(String(20), nullable=False)
     description: Mapped[str]
     publication_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    author_id: Mapped[int]
     book_author_id: Mapped[UUID] = mapped_column(
         ForeignKey("authors.id"), nullable=False
     )

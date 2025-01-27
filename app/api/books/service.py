@@ -66,3 +66,20 @@ class BookService:
             raise HTTPException(
                 status_code=404, detail="Wrong book id length or book not found"
             )
+
+    @staticmethod
+    async def get_book(book_id: str, session: AsyncSession) -> Book | Exception:
+        """Get book by id"""
+        try:
+            stmt = select(Book).filter(Book.id == book_id)
+            book = await session.execute(stmt)
+            book = book.scalars().first()
+            if book is None:
+                raise HTTPException(
+                    status_code=404, detail="Book not found or wrong id length"
+                )
+            return book
+        except SQLAlchemyError:
+            raise HTTPException(
+                status_code=404, detail="wrong id length"
+            )

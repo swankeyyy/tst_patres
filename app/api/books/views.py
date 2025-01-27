@@ -25,3 +25,9 @@ async def delete_book(book_id: str, session=Depends(db_config.get_session)) -> N
     """Delete book by taked book UUID"""
     await BookService.delete_book(book_id, session)
     return None
+
+@router.get("/get/{book_id}", summary="Get book by id", response_model=Union[Book, None])
+async def get_book(book_id: str, session=Depends(db_config.get_session)) -> Book | Exception:
+    """Get book by id"""
+    book = await BookService.get_book(book_id, session)
+    return book

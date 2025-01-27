@@ -1,5 +1,4 @@
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload, joinedload
 
 from .schemas import BookCreate
 from app.src.models import Book
@@ -49,6 +48,20 @@ class BookService:
             await session.commit()
             await session.refresh(book)
             return book
+        except SQLAlchemyError:
+            raise HTTPException(
+                status_code=404, detail="Wrong book id length or book not found"
+            )
+
+    @staticmethod
+    async def delete_book(book_id: str, session: AsyncSession) -> None:
+        """Delete book by taked book UUID"""
+        try:
+            stmt = select(Book).filter(Book.id == book_id)
+            book = await session.execute(stmt)
+            book = book.scalars().first()
+            await session.delete(book)
+            await session.commit()
         except SQLAlchemyError:
             raise HTTPException(
                 status_code=404, detail="Wrong book id length or book not found"

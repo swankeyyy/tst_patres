@@ -19,3 +19,9 @@ async def update_book(book_id: str, new_book: BookCreate, session=Depends(db_con
     """Update book by taked data and book UUID"""
     book = await BookService.update_book(book_id, new_book, session)
     return book
+
+@router.delete("/delete/{book_id}", summary="Delete book", response_model=None)
+async def delete_book(book_id: str, session=Depends(db_config.get_session)) -> None:
+    """Delete book by taked book UUID"""
+    await BookService.delete_book(book_id, session)
+    return None

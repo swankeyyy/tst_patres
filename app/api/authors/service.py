@@ -53,7 +53,25 @@ class AuthorService:
             stmt = select(Author).filter(Author.id == author_id)
             author = await session.execute(stmt)
             author = author.scalars().first()
+            if author is None:
+                raise HTTPException(
+                    status_code=404, detail="Author not found or wrong id length"
+                )
             return author
+        except SQLAlchemyError:
+            raise HTTPException(
+                status_code=404, detail="wrong id length"
+            )
+            
+    @staticmethod
+    async def delete_author(author_id: str, session: AsyncSession) -> None:
+        """Delete author by id"""
+        try:
+            stmt = select(Author).filter(Author.id == author_id)
+            author = await session.execute(stmt)
+            author = author.scalars().first()
+            await session.delete(author)
+            await session.commit()
         except SQLAlchemyError:
             raise HTTPException(
                 status_code=404, detail="Author not found or wrong id length"

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, status
-from .schemas import AuthorCreate, Author
+from .schemas import AuthorCreate, Author, FoolAuthor
 from .service import AuthorService
 from app.src.models.db_config import db_config
 from typing import Union
@@ -37,7 +37,7 @@ async def update_author(
 @router.get(
     "/get_author/{author_id}",
     status_code=status.HTTP_200_OK,
-    response_model=Union[Author, None],
+    response_model=Union[FoolAuthor, None],
     summary="Get an author by id",
 )
 async def get_author(author_id: str, session=Depends(db_config.get_session)):

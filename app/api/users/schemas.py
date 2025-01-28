@@ -8,5 +8,6 @@ class Base(BaseModel):
 class UserBase(Base):
     """Base user model schema"""
     username: str
+    is_superuser: bool
 
 

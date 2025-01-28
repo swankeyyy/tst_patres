@@ -49,8 +49,6 @@ async def login_user(
     response_model=Union[UserBase, None],
 )
 async def get_current_user(
-    session: AsyncSession = Depends(db_config.get_session),
-    username: str = Depends(get_current_user),
+    user: str = Depends(get_current_user),
 ) -> UserBase | Exception:
-    result = await UserService.get_current_user(username, session=session)
-    return result
+    return user

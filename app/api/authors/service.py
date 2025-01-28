@@ -5,6 +5,7 @@ from app.src.models import Author
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
+from sqlalchemy.orm import selectinload, joinedload
 
 
 class AuthorService:
@@ -50,9 +51,10 @@ class AuthorService:
     async def get_author(author_id: str, session: AsyncSession) -> Author | Exception:
         """Get author by id"""
         try:
-            stmt = select(Author).filter(Author.id == author_id)
+            stmt = select(Author).filter(Author.id == author_id).options(selectinload(Author.books))
             author = await session.execute(stmt)
             author = author.scalars().first()
+            
             if author is None:
                 raise HTTPException(
                     status_code=404, detail="Author not found or wrong id length"
@@ -69,7 +71,7 @@ class AuthorService:
         try:
             stmt = select(Author).filter(Author.id == author_id)
             author = await session.execute(stmt)
-            author = author.scalars().first()
+            author = author.scalars().unique().first()
             await session.delete(author)
             await session.commit()
         except SQLAlchemyError:

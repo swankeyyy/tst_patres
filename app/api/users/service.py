@@ -52,3 +52,13 @@ class UserService:
             status_code=400, detail="User not found or password is incorrect"
         )
 
+    @staticmethod
+    async def get_users(user: User, session: AsyncSession):
+        """Get all users from DB"""
+        if user.is_superuser:
+            stmt = select(User)
+            users = await session.execute(stmt)
+            users = users.scalars().all()
+            return list(users)
+
+        raise HTTPException(status_code=403, detail="You are not a superuser")

@@ -52,3 +52,18 @@ async def get_current_user(
     user: str = Depends(get_current_user),
 ) -> UserBase | Exception:
     return user
+
+
+@router.get(
+    "/all_users/",
+    summary="Get all users",
+    status_code=status.HTTP_200_OK,
+    response_model=Union[list[UserBase], None],
+)
+async def get_all_users(
+    user: UserBase = Depends(get_current_user),
+    session: AsyncSession = Depends(db_config.get_session),
+) -> list[UserBase] | Exception:
+    """Get all users from DB"""
+    users = await UserService.get_users(user, session)
+    return users

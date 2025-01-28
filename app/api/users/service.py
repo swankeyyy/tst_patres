@@ -1,10 +1,11 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from fastapi import HTTPException
 
 from app.api.utils import *
-from app.src.models import User
+from app.src.models import User, Book
 
 
 class UserService:
@@ -25,7 +26,9 @@ class UserService:
             if not password_verify(password, username):
                 raise HTTPException(status_code=400, detail="Password is too short")
             hashed_password = hash_password(password)
-            user = User(username=username, password=hashed_password, is_superuser=is_superuser)
+            user = User(
+                username=username, password=hashed_password, is_superuser=is_superuser
+            )
             session.add(user)
             await session.commit()
             await session.refresh(user)
@@ -62,3 +65,21 @@ class UserService:
             return list(users)
 
         raise HTTPException(status_code=403, detail="You are not a superuser")
+
+    @staticmethod
+    async def add_book(user: User, book_id: str, session: AsyncSession):
+        """Add book to user's books"""
+
+        stmt = select(Book).where(Book.id == book_id)
+        book = await session.execute(stmt)
+        book = book.scalars().first()
+        if book:
+            if len(user.books) >= 5:
+                raise HTTPException(
+                    status_code=400, detail="A user cannot borrow more than 5 books"
+                )
+            user.books.append(book)
+            await session.commit()
+            await session.refresh(user)
+            return user
+        raise HTTPException(status_code=404, detail="Book not found")

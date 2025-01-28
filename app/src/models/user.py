@@ -16,7 +16,7 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(60), nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     books: Mapped[List[Book]] = relationship(
-        "Book", secondary=users_books, back_populates="users"
+        "Book", secondary=users_books, back_populates="users", lazy="joined"
     )
 
     @validates("books")

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.dependencies import get_credentials_from_header, get_current_user
 from app.src.models.db_config import db_config
 from app.api.users.service import UserService
-from app.api.users.schemas import UserBase
+from app.api.users.schemas import UserBase, UserWithBooks
 
 router = APIRouter()
 
@@ -46,11 +46,11 @@ async def login_user(
     "/me",
     summary="Get current user",
     status_code=status.HTTP_200_OK,
-    response_model=Union[UserBase, None],
+    response_model=Union[UserWithBooks, None],
 )
 async def get_current_user(
     user: str = Depends(get_current_user),
-) -> UserBase | Exception:
+) -> UserWithBooks | Exception:
     return user
 
 
@@ -68,11 +68,18 @@ async def get_all_users(
     users = await UserService.get_users(user, session)
     return users
 
-@router.get("/add_book/{book_id}", summary="Add book to user's library", status_code=status.HTTP_200_OK)
+
+@router.get(
+    "/add_book/{book_id}",
+    summary="Add book to user's library",
+    status_code=status.HTTP_200_OK,
+    response_model=Union[UserWithBooks, None],
+)
 async def add_book_to_user_library(
     book_id: str,
     user: UserBase = Depends(get_current_user),
     session: AsyncSession = Depends(db_config.get_session),
-) -> str | Exception:
+) -> UserWithBooks | Exception:
     """Add book to user's library"""
-    pass
+    user = await UserService.add_book(user, book_id, session)
+    return user

@@ -68,4 +68,11 @@ async def get_all_users(
     users = await UserService.get_users(user, session)
     return users
 
-
+@router.get("/add_book/{book_id}", summary="Add book to user's library", status_code=status.HTTP_200_OK)
+async def add_book_to_user_library(
+    book_id: str,
+    user: UserBase = Depends(get_current_user),
+    session: AsyncSession = Depends(db_config.get_session),
+) -> str | Exception:
+    """Add book to user's library"""
+    pass

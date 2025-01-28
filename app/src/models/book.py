@@ -7,8 +7,11 @@ from datetime import datetime
 from sqlalchemy import ForeignKey, String, DateTime, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+
 if TYPE_CHECKING:
     from .author import Author
+    from .user import User
+
 
 class Book(Base):
     """Database model of book with author and genre"""
@@ -23,4 +26,6 @@ class Book(Base):
     book_author: Mapped["Author"] = relationship("Author", back_populates="books")
     genre: Mapped[str] = mapped_column(String(20), nullable=True)
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-
+    users: Mapped["User"] = relationship(
+        "User", back_populates="books", secondary="users_books"
+    )

@@ -67,3 +67,5 @@ async def get_all_users(
     """Get all users from DB"""
     users = await UserService.get_users(user, session)
     return users
+
+

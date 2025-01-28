@@ -10,7 +10,7 @@ from app.src.models import User
 class UserService:
     @staticmethod
     async def create_user(
-        username: str, password: str, session: AsyncSession
+        username: str, password: str, session: AsyncSession, is_superuser: bool = False
     ) -> User | Exception:
 
         if not username or not password:
@@ -25,7 +25,7 @@ class UserService:
             if not password_verify(password, username):
                 raise HTTPException(status_code=400, detail="Password is too short")
             hashed_password = hash_password(password)
-            user = User(username=username, password=hashed_password, is_superuser=False)
+            user = User(username=username, password=hashed_password, is_superuser=is_superuser)
             session.add(user)
             await session.commit()
             await session.refresh(user)

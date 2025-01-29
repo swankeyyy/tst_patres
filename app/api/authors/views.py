@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from .schemas import AuthorCreate, Author, FoolAuthor
 from .service import AuthorService
 from app.src.models.db_config import db_config
@@ -16,8 +16,10 @@ router = APIRouter()
 )
 async def add_author(author: AuthorCreate, session=Depends(db_config.get_session), user=Depends(get_current_user)):
     """Add a new author with fields"""
-    author = await AuthorService.create_author(author, session)
-    return author
+    if user.is_superuser:
+        author = await AuthorService.create_author(author, session)
+        return author
+    raise HTTPException(status_code=403, detail="Permission denied")
 
 
 @router.put(
@@ -30,9 +32,10 @@ async def update_author(
     author_id: str, author: AuthorCreate, session=Depends(db_config.get_session), user=Depends(get_current_user)
 ):
     """Update an author with fields"""
-    author = await AuthorService.update_author(author_id, author, session)
-    return author
-
+    if user.is_superuser:
+        author = await AuthorService.update_author(author_id, author, session)
+        return author
+    raise HTTPException(status_code=403, detail="Permission denied")
 
 @router.get(
     "/get_author/{author_id}",
@@ -53,8 +56,9 @@ async def get_author(author_id: str, session=Depends(db_config.get_session)):
 )
 async def delete_author(author_id: str, session=Depends(db_config.get_session), user=Depends(get_current_user)):
     """Delete an author by id"""
-    await AuthorService.delete_author(author_id, session)
-    return None
-
+    if user.is_superuser:
+        await AuthorService.delete_author(author_id, session)
+        return None
+    raise HTTPException(status_code=403, detail="Permission denied")
 
 

@@ -83,3 +83,17 @@ async def add_book_to_user_library(
     """Add book to user's library"""
     user = await UserService.add_book(user, book_id, session)
     return user
+
+
+@router.get(
+    "/delete_book/{book_id}",
+    summary="Delete book from user's library",
+    status_code=status.HTTP_200_OK,
+    response_model=Union[UserWithBooks, None],
+)
+async def delete_book_from_user_library(
+    book_id: str, user=Depends(get_current_user), session=Depends(db_config.get_session)
+) -> UserWithBooks | Exception:
+    """Delete book from user's library"""
+    user = await UserService.delete_book(user, book_id, session)
+    return user

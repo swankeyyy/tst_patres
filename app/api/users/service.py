@@ -74,11 +74,28 @@ class UserService:
         book = await session.execute(stmt)
         book = book.scalars().first()
         if book:
+            if book.quantity < 1:
+                raise HTTPException(status_code=400, detail="Book is out of stock")
             if len(user.books) >= 5:
                 raise HTTPException(
                     status_code=400, detail="A user cannot borrow more than 5 books"
                 )
             user.books.append(book)
+            book.quantity -= 1
+            await session.commit()
+            await session.refresh(user)
+            return user
+        raise HTTPException(status_code=404, detail="Book not found")
+    
+    @staticmethod
+    async def delete_book(user: User, book_id: str, session: AsyncSession):
+        """Delete book from user's books"""
+        stmt = select(Book).where(Book.id == book_id)
+        book = await session.execute(stmt)
+        book = book.scalars().first()
+        if book:
+            user.books.remove(book)
+            book.quantity += 1
             await session.commit()
             await session.refresh(user)
             return user

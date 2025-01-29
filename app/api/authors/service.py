@@ -5,7 +5,7 @@ from app.src.models import Author
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from fastapi import HTTPException
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload
 
 
 class AuthorService:

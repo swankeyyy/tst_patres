@@ -1,4 +1,4 @@
-# Library
+# Library - Test task from Patres
 
 This is a test task for Patres, implemented using FastAPI and SQLAlchemy with asynchronous support.
 
